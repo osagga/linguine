@@ -1,0 +1,16 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/linguine    
+    docker:
+      - image: circleci/node:7
+    steps:
+      - checkout
+      - deploy:
+          name: deploy-linguine
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              ssh -o StrictHostKeyChecking=no circleci@${MY_IP_ADDR} 'rm -rf /var/www/linguine/public/'
+              scp -o StrictHostKeyChecking=no -r ~/linguine/index.html circleci@${MY_IP_ADDR}:/var/www/linguine/
+              scp -o StrictHostKeyChecking=no -r ~/linguine/public/ circleci@${MY_IP_ADDR}:/var/www/linguine/
+            fi
